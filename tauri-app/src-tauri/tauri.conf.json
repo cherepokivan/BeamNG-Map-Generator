@@ -1,51 +1,37 @@
 {
+  "$schema": "https://schema.tauri.app/config/2",
   "package": {
     "productName": "BeamNG Map Generator",
-    "version": "1.0.0",
-    "authors": ["Ivan Cherepok"]
+    "version": "1.0.0"
   },
   "build": {
-    "beforeBuildCommand": "npm run build",
-    "beforeDevCommand": "npm run dev",
-    "devPath": "../src",
-    "distDir": "../src",
-    "withGlobalTauri": true
+    "beforeBuildCommand": "",
+    "beforeDevCommand": "",
+    "devPath": "../dist",
+    "distDir": "../dist"
   },
   "tauri": {
     "bundle": {
-      "active": true,
-      "identifier": "com.beamng.mapgenerator",
-      "icon": [
-        "icons/icon.ico",
-        "icons/icon.png"
-      ],
-      "targets": ["portable", "nsis"],
-      "windows": {
-        "nsis": {
-          "installerIcon": "icons/icon.ico",
-          "uninstallerIcon": "icons/icon.ico",
-          "createDesktopShortcut": true,
-          "createStartMenuShortcut": true,
-          "shortcutName": "BeamNG Map Generator"
-        }
+      "identifier": "com.beamng.mapgen",
+      "icon": ["icons/icon.ico"],
+      "targets": ["nsis"],
+
+      "nsis": {
+        "displayLanguageSelector": false,
+        "createDesktopShortcut": true,
+        "createStartMenuShortcut": true,
+        "installerIcon": "icons/icon.ico",
+        "shortcutName": "BeamNG Map Generator",
+        "uninstallerIcon": "icons/icon.ico"
       }
-    },
-    "allowlist": {
-      "all": true
     },
     "windows": [
       {
         "title": "BeamNG Map Generator",
-        "width": 1280,
-        "height": 800,
-        "resizable": true,
-        "fullscreen": false,
-        "center": true,
-        "decorations": true
+        "width": 1000,
+        "height": 700,
+        "resizable": true
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   }
 }
