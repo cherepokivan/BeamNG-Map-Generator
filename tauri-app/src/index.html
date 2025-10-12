@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>BeamNG Map Generator</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <style>body{font-family:Arial;margin:0;padding:12px;background:#222;color:#fff} #map{width:760px;height:540px;background:#fff}</style>
+  </head>
+  <body>
+    <div style="display:flex;gap:12px;padding:12px;">
+      <div style="width:780px;">
+        <img src="../assets/beamng_logo.png" class="logo" alt="BeamNG Map Generator" style="display:block;margin:8px auto;max-width:420px;">
+        <div id="map"></div>
+        <div style="margin-top:8px;"><button id="send">Send bbox</button></div>
+      </div>
+      <div style="flex:1">
+        <h2>BeamNG Map Generator</h2>
+        <div id="bbox">no bbox</div>
+        <div style="margin-top:12px"><button id="gen">Generate</button></div>
+        <div id="progressbar" style="margin-top:12px">0%</div>
+      </div>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

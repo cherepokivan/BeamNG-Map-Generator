@@ -1,0 +1,16 @@
+{
+  "name": "beamng-map-generator-ui",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "build": "echo \"no-op build for scaffold\""
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.0.0",
+    "typescript": "^4.0.0",
+    "leaflet": "^1.9.4",
+    "leaflet-draw": "^1.0.4"
+  }
+}
