@@ -32,7 +32,7 @@ jobs:
 
       - name: Install frontend deps
         working-directory: ./tauri-app
-        run: npm ci
+        run: npm install
 
       - name: Build bnggen (release)
         working-directory: ./bnggen
