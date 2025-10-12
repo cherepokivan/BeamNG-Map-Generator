@@ -46,7 +46,7 @@ jobs:
 
       - name: Build Tauri app (release)
         working-directory: ./tauri-app
-        run: npm run tauri build
+        run: npm run tauri:build
 
       - name: Create portable zip (fallback)
         run: |
