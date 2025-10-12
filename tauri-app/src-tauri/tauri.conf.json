@@ -18,15 +18,17 @@
         "icons/icon.ico",
         "icons/icon.png"
       ],
-      "targets": ["nsis"]
-    },
-    "nsis": {
-      "displayLanguageSelector": false,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "installerIcon": "icons/icon.ico",
-      "shortcutName": "BeamNG Map Generator",
-      "uninstallerIcon": "icons/icon.ico"
+      "targets": ["nsis"],
+      "windows": {
+        "nsis": {
+          "displayLanguageSelector": false,
+          "createDesktopShortcut": true,
+          "createStartMenuShortcut": true,
+          "installerIcon": "icons/icon.ico",
+          "shortcutName": "BeamNG Map Generator",
+          "uninstallerIcon": "icons/icon.ico"
+        }
+      }
     },
     "allowlist": {
       "all": true
