@@ -44,7 +44,7 @@ fn main() -> Result<()> {
 
     std::fs::write(models.join("building_placeholder.dae"), b"<COLLADA/>")?;
     std::fs::write(outdir.join("buildings.json"), b"{}")?;
-    std::fs::write(outdir / "trees.json", b"{}")?;
+    std::fs::write(outdir.join("trees.json"), b"{}")?;
 
     println_progress(70, "Packaging mod into zip");
     let zip_path = outdir.join("osm_generated_mod.zip");
