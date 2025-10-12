@@ -5,33 +5,45 @@
     "version": "1.0.0"
   },
   "build": {
-    "beforeBuildCommand": "",
-    "beforeDevCommand": "",
-    "devPath": "../dist",
-    "distDir": "../dist"
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "devPath": "../src",
+    "distDir": "../src"
   },
   "tauri": {
     "bundle": {
-      "identifier": "com.beamng.mapgen",
-      "icon": ["icons/icon.ico"],
-      "targets": ["nsis"],
-
-      "nsis": {
-        "displayLanguageSelector": false,
-        "createDesktopShortcut": true,
-        "createStartMenuShortcut": true,
-        "installerIcon": "icons/icon.ico",
-        "shortcutName": "BeamNG Map Generator",
-        "uninstallerIcon": "icons/icon.ico"
-      }
+      "active": true,
+      "identifier": "com.beamng.mapgenerator",
+      "icon": [
+        "icons/icon.ico",
+        "icons/icon.png"
+      ],
+      "targets": ["nsis"]
+    },
+    "nsis": {
+      "displayLanguageSelector": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerIcon": "icons/icon.ico",
+      "shortcutName": "BeamNG Map Generator",
+      "uninstallerIcon": "icons/icon.ico"
+    },
+    "allowlist": {
+      "all": true
     },
     "windows": [
       {
         "title": "BeamNG Map Generator",
-        "width": 1000,
-        "height": 700,
-        "resizable": true
+        "width": 1280,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "decorations": true
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
   }
 }
