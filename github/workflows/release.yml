@@ -1,0 +1,216 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Get version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREVIOUS_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1) 2>/dev/null || echo "")
+          
+          if [ -z "$PREVIOUS_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            CHANGELOG=$(git log $PREVIOUS_TAG..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+          
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          release_name: BeamNG Terrain Generator v${{ steps.get_version.outputs.version }}
+          body: |
+            ## 🚗 BeamNG Terrain Generator v${{ steps.get_version.outputs.version }}
+            
+            ### 🎉 What's New
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ### 📦 Installation
+            
+            Download the appropriate file for your operating system below:
+            - **Windows**: `BeamNG-Terrain-Generator_${{ steps.get_version.outputs.version }}_x64_setup.exe`
+            - **macOS**: `BeamNG-Terrain-Generator_${{ steps.get_version.outputs.version }}_x64.dmg`
+            - **Linux**: `BeamNG-Terrain-Generator_${{ steps.get_version.outputs.version }}_amd64.AppImage`
+            
+            ### ✨ Key Features
+            
+            - 🌍 Generate maps from any real-world location
+            - 🛣️ Complete road network with road_nodes
+            - 🏘️ Buildings, trees, and landmarks from OpenStreetMap
+            - 🏔️ Accurate terrain from AWS Terrain Tiles
+            - 🚗 Native BeamNG DecalRoad format
+            - 📦 Ready-to-install ZIP mod
+            
+            ### 📖 Documentation
+            
+            - [Installation Guide](https://github.com/${{ github.repository }}/blob/main/README.md#installation)
+            - [Usage Instructions](https://github.com/${{ github.repository }}/blob/main/BUILD_INSTRUCTIONS.md)
+            
+            ### 🐛 Known Issues
+            
+            See [Issues](https://github.com/${{ github.repository }}/issues) for known problems and workarounds.
+            
+            ### 🙏 Acknowledgments
+            
+            Special thanks to all contributors and the open-source community!
+          draft: false
+          prerelease: false
+
+  build-windows:
+    needs: create-release
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run tauri build
+
+      - name: Upload Windows installer
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-tauri/target/release/bundle/nsis/BeamNG-Terrain-Generator_${{ needs.create-release.outputs.version }}_x64_setup.exe
+          asset_name: BeamNG-Terrain-Generator_${{ needs.create-release.outputs.version }}_x64_setup.exe
+          asset_content_type: application/octet-stream
+
+      - name: Upload Windows MSI
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-tauri/target/release/bundle/msi/BeamNG-Terrain-Generator_${{ needs.create-release.outputs.version }}_x64_en-US.msi
+          asset_name: BeamNG-Terrain-Generator_${{ needs.create-release.outputs.version }}_x64.msi
+          asset_content_type: application/octet-stream
+
+  build-macos:
+    needs: create-release
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run tauri build
+
+      - name: Upload macOS DMG
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-tauri/target/release/bundle/dmg/BeamNG-Terrain-Generator_${{ needs.create-release.outputs.version }}_x64.dmg
+          asset_name: BeamNG-Terrain-Generator_${{ needs.create-release.outputs.version }}_x64.dmg
+          asset_content_type: application/octet-stream
+
+  build-linux:
+    needs: create-release
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run tauri build
+
+      - name: Upload Linux AppImage
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-tauri/target/release/bundle/appimage/beamng-terrain-generator_${{ needs.create-release.outputs.version }}_amd64.AppImage
+          asset_name: BeamNG-Terrain-Generator_${{ needs.create-release.outputs.version }}_amd64.AppImage
+          asset_content_type: application/octet-stream
+
+      - name: Upload Linux DEB
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-tauri/target/release/bundle/deb/beamng-terrain-generator_${{ needs.create-release.outputs.version }}_amd64.deb
+          asset_name: BeamNG-Terrain-Generator_${{ needs.create-release.outputs.version }}_amd64.deb
+          asset_content_type: application/octet-stream
