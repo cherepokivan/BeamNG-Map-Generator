@@ -2,7 +2,7 @@
 name = "beamng-terrain-generator"
 version = "1.0.0"
 description = "Generate BeamNG.drive maps from real-world data"
-authors = ["Your Name"]
+authors = ["Ivan Cherepok"]
 license = "Apache-2.0"
 repository = "https://github.com/yourusername/beamng-terrain-generator"
 edition = "2021"
